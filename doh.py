@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-# 
-# Prerequisite
-# sudo apt-get install -y python3-pip
-# pip3 install --pre scapy[basic]
-#
-#
 
 from scapy.all import *
 import os
@@ -43,17 +37,12 @@ def markov(src, dst, len):
         
 
 def pkt_parser(pkt):
-    if (pkt.haslayer('TLS')):
+    if pkt.haslayer('TLS'):
         ip = pkt.getlayer(IP)
         tcp = pkt.getlayer(TCP)
         tls = pkt.getlayer(TLS)
-        # print(ip.src+" -> "+ip.dst+" / "+str(tls.len))
 
-        dns_ipaddr = ('1.1.1.1', '1.0.0.1')
-        if ip.src in dns_ipaddr or ip.dst in dns_ipaddr:
-            #print('calc', ip.src, ip.dst, scale(tls.len), tls.len)
-            markov(ip.src+":"+str(tcp.sport), ip.dst+":"+str(tcp.dport), tls.len)
-
+        markov(ip.src+":"+str(tcp.sport), ip.dst+":"+str(tcp.dport), tls.len)
 
 def printchain(a):
     #print('-->', a)
@@ -70,10 +59,19 @@ def printchain(a):
 def main():
     parser = argparse.ArgumentParser(description='DoH bins extractor')
     parser.add_argument('pcap', type=str, help='pcap file')
-    parser.add_argument('-dsn_ip_addresses', type=str, help='list of dns ip addresses separated by comma')
+    parser.add_argument('dsn_ip_addresses', type=str, help='list of dns ip addresses separated by comma')
 
     args = parser.parse_args()
-    pkts = sniff(offline=args.pcap, prn=pkt_parser, bfilter='tcp and port 443') # Read pkts from pcap_file 
+
+    f = 'tcp and port 443'
+    if args.dsn_ip_addresses:
+        hosts = []
+        for h in args.dsn_ip_addresses.split(','):
+            hosts.append('host {}'.format(h))
+        if hosts:
+            f += ' and ({})'.format(' or '.join(hosts))
+
+    pkts = sniff(offline=args.pcap, prn=pkt_parser, filter=f)
     for host in chains:
         printchain(chains[host])
 
