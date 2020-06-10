@@ -46,12 +46,17 @@ class BinsGenerator:
 
     @staticmethod
     def printchain(a):
+        print(BinsGenerator.getchain(a))
+
+    @staticmethod
+    def getchain(a):
         #print('-->', a)
         s = sum(a)
         for x in range(BinsGenerator.MAXLEN):
             a[x] = int((a[x]*100)/s)
 
-        print(a)
+        return a
+
 
         
 
