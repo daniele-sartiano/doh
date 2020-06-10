@@ -63,19 +63,16 @@ def printchain(a):
 
     print(a)
     
+
 ##############################################################################################################
 # MAIN
 
-#pcap_file="doh_single_short.pcap"
-#pcap_file="doh_daniele.pcap"
-#pcap_file="doh_luca.pcap"
+def main():
+    pcap_file = sys.argv[1]
+    pkts = sniff(offline=pcap_file, prn=pkt_parser, bfilter='tcp and port 443') # Read pkts from pcap_file 
+    for host in chains:
+        printchain(chains[host])
 
-pcap_file = sys.argv[1]
 
-pkts = sniff(offline=pcap_file, prn=pkt_parser, bfilter='tcp and port 443') # Read pkts from pcap_file 
-
-for host in chains:
-    #print("From "+host)
-    printchain(chains[host])
-
-#print(chains)
+if __name__ == '__main__':
+    main()
