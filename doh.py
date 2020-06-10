@@ -68,11 +68,14 @@ def printchain(a):
 # MAIN
 
 def main():
-    pcap_file = sys.argv[1]
-    pkts = sniff(offline=pcap_file, prn=pkt_parser, bfilter='tcp and port 443') # Read pkts from pcap_file 
+    parser = argparse.ArgumentParser(description='DoH bins extractor')
+    parser.add_argument('pcap', type=str, help='pcap file')
+    parser.add_argument('-dsn_ip_addresses', type=str, help='list of dns ip addresses separated by comma')
+
+    args = parser.parse_args()
+    pkts = sniff(offline=args.pcap, prn=pkt_parser, bfilter='tcp and port 443') # Read pkts from pcap_file 
     for host in chains:
         printchain(chains[host])
-
 
 if __name__ == '__main__':
     main()
