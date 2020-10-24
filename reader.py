@@ -41,7 +41,7 @@ class Reader:
             self.df = pd.concat(datasets, axis=0, ignore_index=True)
         else:
             with open(pickle_path, 'rb') as fin:
-                self.df = pickle.load(fin, 'rb')
+                self.df = pickle.load(fin)
 
         for e in self.EXCLUDE:
             self.df.pop(e)
