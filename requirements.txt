@@ -1,2 +1,6 @@
 scapy
 numpy
+sklearn
+xgboost
+pandas
+imbalanced-learn
