@@ -44,7 +44,8 @@ class Reader:
                 self.df = pickle.load(fin)
 
         for e in self.EXCLUDE:
-            self.df.pop(e)
+            if e in self.df:
+                self.df.pop(e)
         
         self.columns = self.df.columns
         self.features = [c for c in self.columns if c != self.TARGETS]
