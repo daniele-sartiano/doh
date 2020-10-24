@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import glob
+import pickle
 import pandas as pd
 import numpy as np
 
@@ -49,27 +50,19 @@ class Reader:
         train_y = train.pop(self.TARGETS)
         val_y = val.pop(self.TARGETS)
 
-        # print(train.head())
-        
-        # x = train.values #returns a numpy array
-        # min_max_scaler = MinMaxScaler()
-        # x_scaled = min_max_scaler.fit_transform(x)
-        # train = pd.DataFrame(x_scaled)
-
-        # x_scaled = min_max_scaler.transform(val)
-        # val = pd.DataFrame(x_scaled)
-        
-        # #print(train.info())
-        # print(train.head())
-
-        #return
-        
         return {'train': {'X': train, 'y': train_y}, 'val': {'X': val, 'y': val_y}}
+
+    def dump(self):
+        d = self.read()
+        d['dataset'] = self.df
+        return d
         
 
 def main():
     reader = Reader('data/extracted-features')
-    reader.read()
+    data = reader.dump()
+    with open('dataset.pickle', 'wb') as fout:
+        pickle.dump(data, fout)
 
 if __name__ == '__main__':
     main()
