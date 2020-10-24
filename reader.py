@@ -26,18 +26,22 @@ class Reader:
     def __init__(self, path):
         self.path = path
         
-    def read(self):
-        all_files = glob.glob(self.path + "/*/*.csv")
-        datasets = []
-        for filename in all_files:
-            df = pd.read_csv(filename, sep=';', index_col=None)
-            datasets.append(df)
+    def read(self, pickle=None):
+        if pickle is None:
+            all_files = glob.glob(self.path + "/*/*.csv")
+            datasets = []
+            for filename in all_files:
+                df = pd.read_csv(filename, sep=';', index_col=None)
+                datasets.append(df)
 
-        if not datasets:
-            print('No files found')
-            return
-        
-        self.df = pd.concat(datasets, axis=0, ignore_index=True)
+            if not datasets:
+                print('No files found')
+                return
+
+            self.df = pd.concat(datasets, axis=0, ignore_index=True)
+        else:
+            with open(pickle, 'rb') as fin:
+                self.df = pickle.load(fin)
 
         for e in self.EXCLUDE:
             self.df.pop(e)
@@ -54,8 +58,7 @@ class Reader:
 
     def dump(self):
         d = self.read()
-        d['dataset'] = self.df
-        return d
+        return self.df
         
 
 def main():
