@@ -26,7 +26,7 @@ class Reader:
     def __init__(self, path):
         self.path = path
         
-    def read(self, pickle_path=None):
+    def read(self, pickle_path=None, exclude=[]):
         if pickle is None:
             all_files = glob.glob(self.path + "/*/*.csv")
             datasets = []
@@ -46,6 +46,11 @@ class Reader:
         for e in self.EXCLUDE:
             if e in self.df:
                 self.df.pop(e)
+
+        for e in exclude:
+            if e in self.df:
+                self.df.pop(e)
+
         
         self.columns = self.df.columns
         self.features = [c for c in self.columns if c != self.TARGETS]
