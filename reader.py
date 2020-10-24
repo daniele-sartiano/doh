@@ -26,7 +26,7 @@ class Reader:
     def __init__(self, path):
         self.path = path
         
-    def read(self, pickle=None):
+    def read(self, pickle_path=None):
         if pickle is None:
             all_files = glob.glob(self.path + "/*/*.csv")
             datasets = []
@@ -40,7 +40,7 @@ class Reader:
 
             self.df = pd.concat(datasets, axis=0, ignore_index=True)
         else:
-            with open(pickle, 'rb') as fin:
+            with open(pickle_path, 'rb') as fin:
                 self.df = pickle.load(fin, 'rb')
 
         for e in self.EXCLUDE:
