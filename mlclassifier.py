@@ -73,17 +73,14 @@ class XGBoostClassifier(Estimator):
         y_pred = clf.predict(val)
         print('y_pred', y_pred)
         #y_pred_proba = np.array(clf.predict_proba(val))
+        #best_preds = np.asarray([np.argmax(line) for line in y_pred])
+        best_preds = [round(value) for value in y_pred]
 
-        best_preds = np.asarray([np.argmax(line) for line in y_pred])
-
-        #print(best_preds)
-        
         print(classification_report(val.get_label(), best_preds))
         print(confusion_matrix(val.get_label(), best_preds))
 
         auc = roc_auc_score(val.get_label(), y_pred, multi_class='ovr')
-        print('auc', auc)
-    
+        print('auc', auc)    
 
     def train(self):
         data = self.reader.read()
@@ -99,14 +96,14 @@ class XGBoostClassifier(Estimator):
             'n_jobs': 30
         }
 
-        params['gpu_id'] = 0
+        params['gpu_id'] = 2
         params['tree_method'] = 'gpu_hist'
 
-        # negative = data['train']['y'].value_counts()[0]
-        # positive = data['train']['y'].value_counts()[1]
-        # params['scale_pos_weight'] = negative/positive
+        negative = data['train']['y'].value_counts()[0]
+        positive = data['train']['y'].value_counts()[1]
+        params['scale_pos_weight'] = negative/positive
 
-        params['scale_pos_weight'] = 1
+        #params['scale_pos_weight'] = 1
         train = xgb.DMatrix(data['train']['X'].values, data['train']['y'].values)
         val = xgb.DMatrix(data['val']['X'].values, data['val']['y'].values)
         
@@ -123,7 +120,6 @@ class XGBoostClassifier(Estimator):
     def grid(self):
         data = self.reader.read()
 
-        
         model = xgb.XGBClassifier()
 
         weights = [1, 10, 25, 50, 75, 99, 100, 1000]
